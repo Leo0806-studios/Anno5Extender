@@ -1,0 +1,8 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Anno5Extender/Anno5Extender.vcxproj" Id="24d6230c-4286-4050-b0c9-e4ca74ff2737" />
+  <Project Path="upc_r2_loader64/upc_r2_loader64.vcxproj" Id="b0c8fc0d-7f23-4f5e-b5fe-9d2510847c09" />
+</Solution>

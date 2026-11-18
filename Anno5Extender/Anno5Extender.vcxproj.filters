@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\AddressLibrary">
+      <UniqueIdentifier>{098b0e1e-6f47-4f55-90a9-c3fcdeb3abe1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AddressLibrary\Anno2070">
+      <UniqueIdentifier>{7c423b39-aa8e-4f79-9dd7-9aa06bcf5ac3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AddressLibrary\Anno2070\AI">
+      <UniqueIdentifier>{951f0403-82ed-4204-a059-2094e412a242}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AddressLibrary\Anno2070\Audio">
+      <UniqueIdentifier>{45b86018-02e6-4e2e-b2a1-b635c4d4f7fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AddressLibrary\Anno2070\Bindings">
+      <UniqueIdentifier>{f27b3303-8086-41f8-8877-d6c661047296}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AddressLibrary\Anno2070\Core">
+      <UniqueIdentifier>{75267e9c-5103-466f-ae7c-d18d55f52936}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AddressLibrary\Anno2070\Runtime">
+      <UniqueIdentifier>{0ce5ddd7-c23d-4e1e-bae2-1b7f4ecebf73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AddressLibrary\Anno2070\Runtime\Application">
+      <UniqueIdentifier>{d516df9c-11c1-4e84-9d57-89fd5ea30544}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AddressLibrary\Anno2070\AI\Behaviours">
+      <UniqueIdentifier>{8c28e8ad-4afc-417f-83f6-241b438650e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AddressLibrary\Anno2070\AI\Support">
+      <UniqueIdentifier>{dae9efee-f24c-4be1-be3e-a3bbb585e3e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AddressLibrary\Anno2070\World">
+      <UniqueIdentifier>{2d946bac-a7f9-4f77-a210-fa918d132a7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AddressLibrary\Anno2070\World\Objects">
+      <UniqueIdentifier>{1daa5edd-d9ff-4774-a67f-c15a6c54c98c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="INIT.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Module.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CMainControll.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="INIT.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AddressTemplate.h">
+      <Filter>Header Files\AddressLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="Module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CMainControll.h">
+      <Filter>Header Files\AddressLibrary\Anno2070\Runtime\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="CBehaviourAutoBuild.h">
+      <Filter>Header Files\AddressLibrary\Anno2070\AI\Behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="CThirdPartyBehaviour.h">
+      <Filter>Header Files\AddressLibrary\Anno2070\AI\Support</Filter>
+    </ClInclude>
+    <ClInclude Include="CAccess.h">
+      <Filter>Header Files\AddressLibrary\Anno2070\World\Objects</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

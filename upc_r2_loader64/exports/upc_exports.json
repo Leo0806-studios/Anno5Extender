@@ -1,0 +1,413 @@
+{
+  "schema_version": 1,
+  "machine": "AMD64",
+  "backend_module": "upc_r2_loader64_anno_original",
+  "original_sha256": "658a140d0eb8023a24b173544b2a88e8441020e94f4362bbd74fa416a301bb72",
+  "provenance": "Reviewed export inventory: reconstruction/data/chainload-candidates.json",
+  "exports": [
+    {
+      "name": "UPC_AchievementImageFree",
+      "ordinal": 1
+    },
+    {
+      "name": "UPC_AchievementImageGet",
+      "ordinal": 2
+    },
+    {
+      "name": "UPC_AchievementListFree",
+      "ordinal": 3
+    },
+    {
+      "name": "UPC_AchievementListGet",
+      "ordinal": 4
+    },
+    {
+      "name": "UPC_AchievementUnlock",
+      "ordinal": 5
+    },
+    {
+      "name": "UPC_ApplicationIdGet",
+      "ordinal": 6
+    },
+    {
+      "name": "UPC_AvatarFree",
+      "ordinal": 7
+    },
+    {
+      "name": "UPC_AvatarGet",
+      "ordinal": 8
+    },
+    {
+      "name": "UPC_BlacklistAdd",
+      "ordinal": 9
+    },
+    {
+      "name": "UPC_BlacklistHas",
+      "ordinal": 10
+    },
+    {
+      "name": "UPC_BlacklistHas_Extended",
+      "ordinal": 11
+    },
+    {
+      "name": "UPC_CPUScoreGet",
+      "ordinal": 12
+    },
+    {
+      "name": "UPC_Cancel",
+      "ordinal": 13
+    },
+    {
+      "name": "UPC_ContextCreate",
+      "ordinal": 14
+    },
+    {
+      "name": "UPC_ContextFree",
+      "ordinal": 15
+    },
+    {
+      "name": "UPC_EmailGet",
+      "ordinal": 16
+    },
+    {
+      "name": "UPC_EmailGet_Extended",
+      "ordinal": 17
+    },
+    {
+      "name": "UPC_ErrorToString",
+      "ordinal": 18
+    },
+    {
+      "name": "UPC_EventNextPeek",
+      "ordinal": 19
+    },
+    {
+      "name": "UPC_EventNextPoll",
+      "ordinal": 20
+    },
+    {
+      "name": "UPC_EventRegisterHandler",
+      "ordinal": 21
+    },
+    {
+      "name": "UPC_FriendAdd",
+      "ordinal": 22
+    },
+    {
+      "name": "UPC_FriendCheck",
+      "ordinal": 23
+    },
+    {
+      "name": "UPC_FriendCheck_Extended",
+      "ordinal": 24
+    },
+    {
+      "name": "UPC_FriendListFree",
+      "ordinal": 25
+    },
+    {
+      "name": "UPC_FriendListGet",
+      "ordinal": 26
+    },
+    {
+      "name": "UPC_FriendRemove",
+      "ordinal": 27
+    },
+    {
+      "name": "UPC_GPUScoreGet",
+      "ordinal": 28
+    },
+    {
+      "name": "UPC_IdGet",
+      "ordinal": 29
+    },
+    {
+      "name": "UPC_IdGet_Extended",
+      "ordinal": 30
+    },
+    {
+      "name": "UPC_Init",
+      "ordinal": 31
+    },
+    {
+      "name": "UPC_InstallChunkListFree",
+      "ordinal": 32
+    },
+    {
+      "name": "UPC_InstallChunkListGet",
+      "ordinal": 33
+    },
+    {
+      "name": "UPC_InstallChunksOrderUpdate",
+      "ordinal": 34
+    },
+    {
+      "name": "UPC_InstallChunksOrderUpdate_Extended",
+      "ordinal": 35
+    },
+    {
+      "name": "UPC_InstallChunksPresenceCheck",
+      "ordinal": 36
+    },
+    {
+      "name": "UPC_InstallLanguageGet",
+      "ordinal": 37
+    },
+    {
+      "name": "UPC_InstallLanguageGet_Extended",
+      "ordinal": 38
+    },
+    {
+      "name": "UPC_LaunchApp",
+      "ordinal": 39
+    },
+    {
+      "name": "UPC_MultiplayerInvite",
+      "ordinal": 40
+    },
+    {
+      "name": "UPC_MultiplayerInviteAnswer",
+      "ordinal": 41
+    },
+    {
+      "name": "UPC_MultiplayerSessionClear",
+      "ordinal": 42
+    },
+    {
+      "name": "UPC_MultiplayerSessionClear_Extended",
+      "ordinal": 43
+    },
+    {
+      "name": "UPC_MultiplayerSessionFree",
+      "ordinal": 44
+    },
+    {
+      "name": "UPC_MultiplayerSessionGet",
+      "ordinal": 45
+    },
+    {
+      "name": "UPC_MultiplayerSessionSet",
+      "ordinal": 46
+    },
+    {
+      "name": "UPC_MultiplayerSessionSet_Extended",
+      "ordinal": 47
+    },
+    {
+      "name": "UPC_NameGet",
+      "ordinal": 48
+    },
+    {
+      "name": "UPC_NameGet_Extended",
+      "ordinal": 49
+    },
+    {
+      "name": "UPC_OverlayBrowserUrlShow",
+      "ordinal": 50
+    },
+    {
+      "name": "UPC_OverlayFriendInvitationShow",
+      "ordinal": 51
+    },
+    {
+      "name": "UPC_OverlayFriendInvitationShow_Extended",
+      "ordinal": 52
+    },
+    {
+      "name": "UPC_OverlayFriendSelectionFree",
+      "ordinal": 53
+    },
+    {
+      "name": "UPC_OverlayFriendSelectionShow",
+      "ordinal": 54
+    },
+    {
+      "name": "UPC_OverlayMicroAppShow",
+      "ordinal": 55
+    },
+    {
+      "name": "UPC_OverlayNotificationShow",
+      "ordinal": 56
+    },
+    {
+      "name": "UPC_OverlayNotificationShow_Extended",
+      "ordinal": 57
+    },
+    {
+      "name": "UPC_OverlayShow",
+      "ordinal": 58
+    },
+    {
+      "name": "UPC_ProductConsume",
+      "ordinal": 59
+    },
+    {
+      "name": "UPC_ProductConsumeSignatureFree",
+      "ordinal": 60
+    },
+    {
+      "name": "UPC_ProductListFree",
+      "ordinal": 61
+    },
+    {
+      "name": "UPC_ProductListGet",
+      "ordinal": 62
+    },
+    {
+      "name": "UPC_RichPresenceSet",
+      "ordinal": 63
+    },
+    {
+      "name": "UPC_RichPresenceSet_Extended",
+      "ordinal": 64
+    },
+    {
+      "name": "UPC_ShowBrowserUrl",
+      "ordinal": 65
+    },
+    {
+      "name": "UPC_StorageFileClose",
+      "ordinal": 66
+    },
+    {
+      "name": "UPC_StorageFileDelete",
+      "ordinal": 67
+    },
+    {
+      "name": "UPC_StorageFileListFree",
+      "ordinal": 68
+    },
+    {
+      "name": "UPC_StorageFileListGet",
+      "ordinal": 69
+    },
+    {
+      "name": "UPC_StorageFileOpen",
+      "ordinal": 70
+    },
+    {
+      "name": "UPC_StorageFileRead",
+      "ordinal": 71
+    },
+    {
+      "name": "UPC_StorageFileWrite",
+      "ordinal": 72
+    },
+    {
+      "name": "UPC_StoreCheckout",
+      "ordinal": 73
+    },
+    {
+      "name": "UPC_StoreIsEnabled",
+      "ordinal": 74
+    },
+    {
+      "name": "UPC_StoreIsEnabled_Extended",
+      "ordinal": 75
+    },
+    {
+      "name": "UPC_StoreLanguageSet",
+      "ordinal": 76
+    },
+    {
+      "name": "UPC_StorePartnerGet",
+      "ordinal": 77
+    },
+    {
+      "name": "UPC_StorePartnerGet_Extended",
+      "ordinal": 78
+    },
+    {
+      "name": "UPC_StoreProductDetailsShow",
+      "ordinal": 79
+    },
+    {
+      "name": "UPC_StoreProductListFree",
+      "ordinal": 80
+    },
+    {
+      "name": "UPC_StoreProductListGet",
+      "ordinal": 81
+    },
+    {
+      "name": "UPC_StoreProductsShow",
+      "ordinal": 82
+    },
+    {
+      "name": "UPC_StreamingCurrentUserCountryFree",
+      "ordinal": 83
+    },
+    {
+      "name": "UPC_StreamingCurrentUserCountryGet",
+      "ordinal": 84
+    },
+    {
+      "name": "UPC_StreamingDeviceTypeGet",
+      "ordinal": 85
+    },
+    {
+      "name": "UPC_StreamingInputGamepadTypeGet",
+      "ordinal": 86
+    },
+    {
+      "name": "UPC_StreamingInputTypeGet",
+      "ordinal": 87
+    },
+    {
+      "name": "UPC_StreamingNetworkDelayForInputGet",
+      "ordinal": 88
+    },
+    {
+      "name": "UPC_StreamingNetworkDelayForVideoGet",
+      "ordinal": 89
+    },
+    {
+      "name": "UPC_StreamingNetworkDelayRoundtripGet",
+      "ordinal": 90
+    },
+    {
+      "name": "UPC_StreamingResolutionFree",
+      "ordinal": 91
+    },
+    {
+      "name": "UPC_StreamingResolutionGet",
+      "ordinal": 92
+    },
+    {
+      "name": "UPC_StreamingTypeGet",
+      "ordinal": 93
+    },
+    {
+      "name": "UPC_TicketGet",
+      "ordinal": 94
+    },
+    {
+      "name": "UPC_TicketGet_Extended",
+      "ordinal": 95
+    },
+    {
+      "name": "UPC_Uninit",
+      "ordinal": 96
+    },
+    {
+      "name": "UPC_Update",
+      "ordinal": 97
+    },
+    {
+      "name": "UPC_UserFree",
+      "ordinal": 98
+    },
+    {
+      "name": "UPC_UserGet",
+      "ordinal": 99
+    },
+    {
+      "name": "UPC_UserPlayedWithAdd",
+      "ordinal": 100
+    },
+    {
+      "name": "UPC_UserPlayedWithAdd_Extended",
+      "ordinal": 101
+    }
+  ]
+}
