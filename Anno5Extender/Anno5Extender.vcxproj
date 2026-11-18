@@ -172,10 +172,7 @@
     <ClInclude Include="Module.h" />
     <ClInclude Include="Plugins.h" />
   </ItemGroup>
-  <PropertyGroup>
-    <OutDir>$(ProjectDir)..\bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)..\obj\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
-  </PropertyGroup>
+  <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
   </PropertyGroup>
