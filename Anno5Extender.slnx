@@ -4,5 +4,8 @@
     <Platform Name="x86" />
   </Configurations>
   <Project Path="Anno5Extender/Anno5Extender.vcxproj" Id="24d6230c-4286-4050-b0c9-e4ca74ff2737" />
+  <Project Path="Anno5ImguiInspector/Anno5ImguiInspector.vcxproj" Id="ae34deb4-14ff-4822-94c9-ea28f64a3947" />
+  <Project Path="Anno5LocalChatEcho/Anno5LocalChatEcho.vcxproj" Id="5bd98cdc-e10f-4c7e-81e9-edaea1a0fe65" />
+  <Project Path="Anno5WarehouseStorageCapExtender/Anno5WarehouseStorageCapExtender.vcxproj" Id="d6a54066-625b-4a05-8cce-3ef102f39409" />
   <Project Path="upc_r2_loader64/upc_r2_loader64.vcxproj" Id="b0c8fc0d-7f23-4f5e-b5fe-9d2510847c09" />
 </Solution>

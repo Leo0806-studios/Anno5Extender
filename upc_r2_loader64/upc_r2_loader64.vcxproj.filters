@@ -15,11 +15,20 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(ProxyGeneratedDir)\proxy_exports.generated.h"><Filter>Header Files</Filter></ClInclude>
-    <None Include="tools\Generate-ProxyExports.ps1"><Filter>Resource Files</Filter></None>
-    <CustomBuild Include="$(UpcExportManifest)"><Filter>Resource Files</Filter></CustomBuild>
+    <ClInclude Include="$(ProxyGeneratedDir)\proxy_exports.generated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <None Include="tools\Generate-ProxyExports.ps1">
+      <Filter>Resource Files</Filter>
+    </None>
+    <CustomBuild Include="$(UpcExportManifest)">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(UpcExportManifest)" />
   </ItemGroup>
 </Project>

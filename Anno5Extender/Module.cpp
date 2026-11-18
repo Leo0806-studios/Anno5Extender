@@ -1,8 +1,11 @@
+#pragma warning(push,0)
 #include <Windows.h>
 #include <bcrypt.h>
+#pragma warning(pop)
 #include "Module.h"
 #include <vector>
 #include <optional>
+#include <filesystem>
 
 #pragma comment(lib, "bcrypt.lib")
 
@@ -15,7 +18,30 @@ namespace A5Ext {
 		else {
 			DisplayErrorMessageBoxAndExit("Failed to compute SHA-256 hash of the module.", "Error");
 		}
+		std::vector<wchar_t> localFilePath(MAX_PATH);
 
+		// Resolve full module path.
+		for (;;)
+		{
+			DWORD length = GetModuleFileNameW(
+				moduleHandle,
+				localFilePath.data(),
+				static_cast<DWORD>(localFilePath.size())
+			);
+
+			if (length == 0)
+				DisplayErrorMessageBoxAndExit("Failed to get module file name.", "Error");
+
+			if (length < localFilePath.size())
+				break;
+
+			if (localFilePath.size() >= 32768)
+				DisplayErrorMessageBoxAndExit("Module file path is too long.", "Error");
+
+			localFilePath.resize(localFilePath.size() * 2);
+		}
+
+		this->filePath = std::filesystem::path(localFilePath.data());
 		initialized = true;
 	}
 	std::optional<std::array<uint8_t, 32>> Module::GetSha256FromFile(HMODULE moduleHandle)
@@ -159,11 +185,15 @@ namespace A5Ext {
 	
 	
 	}
-	A5Ext::Module& A5Ext::Module::Get()
+	A5Ext::Module& A5Ext::Module::GetInstance()
 	{
-		if (!instance) {
-			instance = new Module();
-		}
-		return *instance;
+		static Module instance;
+		return instance;
 	}
+	std::filesystem::path Module::GetFilePath() const
+	{
+		return filePath;
+	}
+	Module::~Module()
+	{}
 }

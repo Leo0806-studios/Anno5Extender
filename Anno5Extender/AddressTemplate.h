@@ -11,7 +11,7 @@ namespace  A5Ext::AddressLibrary {
 	public:
 		T* Get() {
 			if (address == 0) {
-				address = Module::Get().GetBaseAddress() + rva;
+				address = Module::GetInstance().GetBaseAddress() + rva;
 			}
 			return std::bit_cast<T*>(address);
 		}
@@ -28,7 +28,7 @@ namespace  A5Ext::AddressLibrary {
 	class BlockingPlaceholder {
 
 		uint8_t data[N];
-		public 
+	public:
 			BlockingPlaceholder() {
 			static_assert(N > 0, "BlockingPlaceholder size must be greater than 0");
 			static_assert(N != N, "Remove all BlockingPlaceholders from the code");
@@ -42,18 +42,14 @@ namespace  A5Ext::AddressLibrary {
 			static_assert(N > 0, "Placeholder size must be greater than 0");
 		}
 	};
+	template<typename ret,typename self, typename...args>
+	ret callVtableSlot(self* obj,size_t slot, args ... a) {
+		void** vtable = *reinterpret_cast<void***>(obj);
+		using funcV = ret(*)(self*, args...);
+		funcV func = reinterpret_cast<funcV>(vtable[slot]);
+		return func(obj, a...);
 
-	template<typename VTable,typename Base>
-	struct Inheritance {
-		VTable* vtable;
-		Base base;
-	};
+	}
 
-	template <typename VTble, typename ... Bases>
-	struct MultipleInheritance {
-		VTble* vtable;
-		std::tuple<Bases...> bases;
-	};
 
-	//i hope virtual inheritance is either not used or is hopefully possible with the usual mechanisms
 }

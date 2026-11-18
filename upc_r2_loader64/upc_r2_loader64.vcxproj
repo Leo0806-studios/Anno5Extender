@@ -182,10 +182,6 @@
       <AdditionalInputs>$(ProjectDir)tools\Generate-ProxyExports.ps1;$(MSBuildProjectFullPath);%(AdditionalInputs)</AdditionalInputs>
       <Outputs>$(ProxyGeneratedDir)\upc_r2_loader64.def;$(ProxyGeneratedDir)\proxy_exports.generated.h;$(ProxyGeneratedDir)\upc_r2_loader64.exports.json</Outputs>
     </CustomBuild>
-    <ProjectReference Include="..\Anno5Extender\Anno5Extender.vcxproj">
-      <Project>{24d6230c-4286-4050-b0c9-e4ca74ff2737}</Project>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-    </ProjectReference>
   </ItemGroup>
   <Target Name="RequireX64Proxy" BeforeTargets="PrepareForBuild">
     <Error Condition="'$(Platform)'!='x64'" Text="The Anno5 UPC proxy supports x64 only. Select the x64 solution platform." />

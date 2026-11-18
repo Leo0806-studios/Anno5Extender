@@ -49,6 +49,12 @@
     <Filter Include="Header Files\AddressLibrary\Anno2070\World\Objects">
       <UniqueIdentifier>{1daa5edd-d9ff-4774-a67f-c15a6c54c98c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Extender">
+      <UniqueIdentifier>{a17bdea1-dd8e-42bc-a0d4-a3f8f48df7ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AddressLibrary">
+      <UniqueIdentifier>{9d6b2985-912a-44f3-880b-8b355915d290}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="INIT.cpp">
@@ -60,19 +66,22 @@
     <ClCompile Include="Module.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CMainControll.cpp">
+    <ClCompile Include="Plugins.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CBehaviourAutoBuild.cpp">
+      <Filter>Source Files\AddressLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="CMainControll.cpp">
+      <Filter>Source Files\AddressLibrary</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="INIT.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AddressTemplate.h">
       <Filter>Header Files\AddressLibrary</Filter>
-    </ClInclude>
-    <ClInclude Include="Module.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CMainControll.h">
       <Filter>Header Files\AddressLibrary\Anno2070\Runtime\Application</Filter>
@@ -85,6 +94,21 @@
     </ClInclude>
     <ClInclude Include="CAccess.h">
       <Filter>Header Files\AddressLibrary\Anno2070\World\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="INIT.h">
+      <Filter>Header Files\Extender</Filter>
+    </ClInclude>
+    <ClInclude Include="Module.h">
+      <Filter>Header Files\Extender</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins.h">
+      <Filter>Header Files\Extender</Filter>
+    </ClInclude>
+    <ClInclude Include="Macros.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>Header Files\Extender</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

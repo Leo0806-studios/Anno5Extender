@@ -1,12 +1,12 @@
+#include <Windows.h>
 #include <atomic>
 #include <bcrypt.h>
 #include <cstdio>
 #include <cstring>
 #include <strsafe.h>
-#include <Windows.h>
-#include "../Anno5Extender/INIT.h"
 #include "proxy_exports.generated.h"
-
+using ExtenderInitFunc = bool(__cdecl*)();
+const char* const ExtenderInitExportName = "Anno5Extender_Init";
 static_assert(sizeof(void*) == 8, "Anno5 requires an x64 proxy");
 namespace {
 	using UpcInit = int(__cdecl*)(std::uint32_t, std::uint32_t);
@@ -145,8 +145,8 @@ namespace {
 		if (!extender_module) {
 			Log("extender_load_failed", GetLastError()); return;
 		}
-		auto init = reinterpret_cast<A5Ext::Bootstrap::InitFn>(
-			GetProcAddress(extender_module, A5Ext::Bootstrap::InitExportName));
+		auto init = reinterpret_cast<ExtenderInitFunc>(
+			GetProcAddress(extender_module, ExtenderInitExportName));
 		if (!init) {
 			Log("extender_init_export_missing", ERROR_PROC_NOT_FOUND); return;
 		}
