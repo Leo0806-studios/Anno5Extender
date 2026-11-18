@@ -21,4 +21,4 @@ namespace A5Ext
 // Zero = initialized; nonzero = failed/partial initialization. Never throw across it.
 extern "C" A5EXT_BOOTSTRAP_API DWORD __cdecl Anno5Extender_Init() noexcept;
 
-extern "C" A5EXT_BOOTSTRAP_API void __cdecl Anno5Extender_Shutdown() noexcept;
+extern "C" A5EXT_BOOTSTRAP_API DWORD __cdecl Anno5Extender_Shutdown() noexcept;

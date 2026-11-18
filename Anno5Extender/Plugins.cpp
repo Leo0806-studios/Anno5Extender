@@ -47,6 +47,7 @@ namespace A5Ext {
 			{
 				plugin->Shutdown();
 				delete plugin;
+				plugin = nullptr;
 			}
 		}
 	}

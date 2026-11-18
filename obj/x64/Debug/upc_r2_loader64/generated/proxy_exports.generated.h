@@ -1,6 +1,6 @@
 // Generated. The hash identifies the reviewed original, not this proxy.
 #pragma once
-namespace A5Ext::Proxy::Generated {
+namespace A5ext::Proxy::Generated {
 inline constexpr wchar_t BackendFileName[]=L"upc_r2_loader64_anno_original.dll";
 inline constexpr char BackendSha256[]="658a140d0eb8023a24b173544b2a88e8441020e94f4362bbd74fa416a301bb72";
 inline constexpr unsigned ExportCount=101;

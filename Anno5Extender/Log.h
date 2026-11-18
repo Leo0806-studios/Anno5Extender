@@ -15,9 +15,11 @@ namespace A5Ext {
 		std::filesystem::path logFilePath;
 		std::ofstream logFile;
 		bool isBuffered = false;
+		bool isInitialized = false;
 		AnnoDll void flush();
 		AnnoDll Logger(const std::string& pluginName);
 	public:
+		Logger() = default;
 		Logger(const Logger&) = delete;
 		Logger& operator=(const Logger&) = delete;
 		Logger(Logger&& other) :

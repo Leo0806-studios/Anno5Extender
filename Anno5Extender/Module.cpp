@@ -185,12 +185,12 @@ namespace A5Ext {
 	
 	
 	}
-	A5Ext::Module& A5Ext::Module::GetInstance()
+	AnnoDll A5Ext::Module& A5Ext::Module::GetInstance()
 	{
 		static Module instance;
 		return instance;
 	}
-	std::filesystem::path Module::GetFilePath() const
+	AnnoDll std::filesystem::path Module::GetFilePath() const
 	{
 		return filePath;
 	}

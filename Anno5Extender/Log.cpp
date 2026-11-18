@@ -28,6 +28,10 @@ namespace A5Ext {
 	}
 	AnnoDll void Logger::Log(const std::string& message)
 	{
+		if(!isInitialized)
+		{
+			return;
+		}
 		logFile << "[" << pluginName << "] " << message << std::endl;
 		if (!isBuffered) {
 

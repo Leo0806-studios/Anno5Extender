@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <filesystem>
+#include "Macros.h"
 namespace A5Ext {
 #pragma warning(push)
 #pragma warning(disable:4820)
@@ -26,7 +27,7 @@ namespace A5Ext {
 
 	public:
 		static std::optional<std::array<uint8_t, 32>> GetSha256FromFile(HMODULE moduleHandle);
-		static Module& GetInstance();
+		AnnoDll static Module& GetInstance();
 		HMODULE GetHandle() const noexcept {
 			return moduleHandle;
 		}
@@ -36,7 +37,7 @@ namespace A5Ext {
 		uintptr_t GetBaseAddress() const noexcept {
 			return std::bit_cast<uintptr_t>(moduleHandle);
 		}
-		std::filesystem::path GetFilePath() const;
+		AnnoDll std::filesystem::path GetFilePath() const;
 		~Module();
 	};
 #pragma warning(pop)
