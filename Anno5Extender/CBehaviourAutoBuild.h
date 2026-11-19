@@ -39,3 +39,6 @@ namespace A5Ext::AddressLibrary::Anno2070::AI::Behaviour {
 	};
 }
 #pragma warning(pop)
+namespace A5Ext::AddressLibrary {
+	void InitializeCBehaviourAutoBuildBindings();
+}

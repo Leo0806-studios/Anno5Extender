@@ -150,17 +150,9 @@
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
   </ItemDefinitionGroup>
-  <PropertyGroup>
-    <OutDir>$(ProjectDir)..\bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)..\obj\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
-    <UpcExportManifest Condition="'$(UpcExportManifest)'==''">$(ProjectDir)exports\upc_exports.json</UpcExportManifest>
-    <ProxyGeneratedDir>$(IntDir)generated</ProxyGeneratedDir>
-    <CustomBuildBeforeTargets>ClCompile;Link</CustomBuildBeforeTargets>
-    <CustomBuildAfterTargets>PrepareForBuild</CustomBuildAfterTargets>
-  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProxyGeneratedDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -168,28 +160,19 @@
       <RuntimeLibrary Condition="'$(Configuration)'!='Debug'">MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <ModuleDefinitionFile>$(ProxyGeneratedDir)\upc_r2_loader64.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>$(ProjectDir)upc_r2_loader64.def</ModuleDefinitionFile>
       <AdditionalDependencies>bcrypt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="upc_r2_loader64.def" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Loader.cpp" />
     <ClInclude Include="Loader.h" />
-    <ClInclude Include="$(ProxyGeneratedDir)\proxy_exports.generated.h" />
-    <None Include="tools\Generate-ProxyExports.ps1" />
-    <CustomBuild Include="$(UpcExportManifest)">
-      <Message>Generating the reviewed UPC export interface</Message>
-      <Command>"$(SystemRoot)\System32\WindowsPowerShell\v1.0\powershell.exe" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "$(ProjectDir)tools\Generate-ProxyExports.ps1" -Manifest "$(UpcExportManifest)" -OutputDirectory "$(ProxyGeneratedDir)"</Command>
-      <AdditionalInputs>$(ProjectDir)tools\Generate-ProxyExports.ps1;$(MSBuildProjectFullPath);%(AdditionalInputs)</AdditionalInputs>
-      <Outputs>$(ProxyGeneratedDir)\upc_r2_loader64.def;$(ProxyGeneratedDir)\proxy_exports.generated.h;$(ProxyGeneratedDir)\upc_r2_loader64.exports.json</Outputs>
-    </CustomBuild>
+    <ClInclude Include="ProxyHeader.h" />
   </ItemGroup>
   <Target Name="RequireX64Proxy" BeforeTargets="PrepareForBuild">
     <Error Condition="'$(Platform)'!='x64'" Text="The Anno5 UPC proxy supports x64 only. Select the x64 solution platform." />
-  </Target>
-  <Target Name="PublishProxyExportMappings" AfterTargets="Link">
-    <Copy SourceFiles="$(ProxyGeneratedDir)\upc_r2_loader64.def;$(ProxyGeneratedDir)\upc_r2_loader64.exports.json" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
   </Target>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

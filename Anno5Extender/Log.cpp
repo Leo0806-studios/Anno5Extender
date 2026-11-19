@@ -17,6 +17,7 @@ namespace A5Ext {
 			MessageBoxA(nullptr, ("Failed to open log file: " + logFilePath.string()).c_str(), "Error", MB_ICONERROR | MB_OK);
 			ExitProcess(EXIT_FAILURE);
 		}
+		isInitialized = true;
 	}
 	AnnoDll Logger Logger::Create(const std::string& PluginName)
 	{

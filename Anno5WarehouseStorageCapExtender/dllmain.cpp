@@ -5,6 +5,8 @@
 #include <psapi.h>
 #include <bit>
 #include <fstream>
+#include <limits>
+#include <stdexcept>
 #include <Log.h>
 A5Ext::Logger logger;
 BOOL APIENTRY DllMain( HMODULE hModule,
@@ -34,8 +36,18 @@ uint32_t getNewCapFromConfigValue() {
 	std::string line;
 	while (std::getline(configFile, line)) {
 		if (line.find("newCap") != std::string::npos) {
-			uint32_t newCap = std::stoul(line.substr(line.find("=") + 1));
-			return newCap;
+			const auto separator = line.find('=');
+			if (separator == std::string::npos) throw std::invalid_argument("Missing '=' for newCap");
+			const std::string value = line.substr(separator + 1);
+			const auto first = value.find_first_not_of(" \t\r");
+			if (first == std::string::npos || value[first] == '-')
+				throw std::invalid_argument("newCap must be a positive integer");
+			size_t consumed = 0;
+			const auto newCap = std::stoull(value, &consumed);
+			if (newCap == 0 || newCap > (std::numeric_limits<uint32_t>::max)() ||
+				value.find_first_not_of(" \t\r", consumed) != std::string::npos)
+				throw std::out_of_range("Invalid newCap value");
+			return static_cast<uint32_t>(newCap);
 		}
 	}
 	logger.Log("Failed to find newCap in config file. setting default value of 999999 \n");
@@ -45,7 +57,15 @@ uint32_t& address(uintptr_t base, uint32_t offset) {
 
 	return *(std::bit_cast<uint32_t*>(base + offset));
 }
-static	void PatchBytes() {
+static bool PatchBytes() {
+	uint32_t newCap = 0;
+	try {
+		newCap = getNewCapFromConfigValue();
+	}
+	catch (const std::exception& error) {
+		logger.Log(std::string("Invalid cap configuration: ") + error.what());
+		return false;
+	}
 	auto& module = A5Ext::Module::GetInstance();
 	auto baseAddress = module.GetBaseAddress();
 	MODULEINFO moduleInfo{};
@@ -54,7 +74,7 @@ static	void PatchBytes() {
 		!GetModuleInformation(GetCurrentProcess(), module.GetHandle(), &moduleInfo, sizeof(moduleInfo)) ||
 		moduleInfo.SizeOfImage == 0) {
 		logger.Log("Failed to obtain the host module information; patches were not applied.\n");
-		return;
+		return false;
 	}
 
 	struct Patch {
@@ -84,12 +104,29 @@ static	void PatchBytes() {
 	const uintptr_t pageSize = static_cast<uintptr_t>(systemInfo.dwPageSize);
 	if (pageSize == 0 || (pageSize & (pageSize - 1)) != 0) {
 		logger.Log("Failed to obtain a valid memory page size; patches were not applied.\n");
-		return;
+		return false;
 	}
 
 	uintptr_t protectedPageAddresses[sizeof(patches) / sizeof(patches[0]) * 2]{};
 	DWORD protectedPageProtections[sizeof(patches) / sizeof(patches[0]) * 2]{};
 	size_t protectedPageCount = 0;
+	struct ProtectionGuard {
+		uintptr_t* addresses;
+		DWORD* protections;
+		size_t* count;
+		uintptr_t pageSize;
+		bool Restore() noexcept {
+			bool success = true;
+			for (size_t i = 0; i < *count; ++i) {
+				DWORD ignoredProtection = 0;
+				if (!VirtualProtect(reinterpret_cast<void*>(addresses[i]), pageSize,
+					protections[i], &ignoredProtection)) success = false;
+			}
+			if (success) *count = 0;
+			return success;
+		}
+		~ProtectionGuard() { Restore(); }
+	} protectionGuard{protectedPageAddresses, protectedPageProtections, &protectedPageCount, pageSize};
 	const uintptr_t pageMask = ~(pageSize - 1);
 	const uintptr_t imageEnd = baseAddress + static_cast<uintptr_t>(moduleInfo.SizeOfImage);
 
@@ -97,7 +134,7 @@ static	void PatchBytes() {
 		const uintptr_t target = baseAddress + static_cast<uintptr_t>(patch.offset);
 		if (target < baseAddress || target > imageEnd || imageEnd - target < sizeof(uint32_t)) {
 			logger.Log("A patch address is outside the host module; patches were not applied.\n");
-			return;
+			return false;
 		}
 
 		const uintptr_t firstPage = target & pageMask;
@@ -115,13 +152,8 @@ static	void PatchBytes() {
 				DWORD oldProtection = 0;
 				if (!VirtualProtect(reinterpret_cast<void*>(page), pageSize,
 					PAGE_EXECUTE_READWRITE, &oldProtection)) {
-					for (size_t i = 0; i < protectedPageCount; ++i) {
-						DWORD ignoredProtection = 0;
-						VirtualProtect(reinterpret_cast<void*>(protectedPageAddresses[i]),
-							pageSize, protectedPageProtections[i], &ignoredProtection);
-					}
 					logger.Log("Failed to change memory protection; patches were not applied.\n");
-					return;
+					return false;
 				}
 				protectedPageAddresses[protectedPageCount] = page;
 				protectedPageProtections[protectedPageCount] = oldProtection;
@@ -134,28 +166,23 @@ static	void PatchBytes() {
 		}
 	}
 
-	const uint32_t newCap = getNewCapFromConfigValue();
 	for (const Patch& patch : patches) {
 		const uint32_t value = newCap / patch.divisor;
 		const uintptr_t target = baseAddress + static_cast<uintptr_t>(patch.offset);
 		CopyMemory(reinterpret_cast<void*>(target), &value, sizeof(value));
 	}
 
-	FlushInstructionCache(GetCurrentProcess(), reinterpret_cast<void*>(baseAddress), moduleInfo.SizeOfImage);
-
-	for (size_t i = 0; i < protectedPageCount; ++i) {
-		DWORD ignoredProtection = 0;
-		if (!VirtualProtect(reinterpret_cast<void*>(protectedPageAddresses[i]), pageSize,
-			protectedPageProtections[i], &ignoredProtection)) {
-			logger.Log("Failed to restore memory protection after patching.\n");
-		}
-	}
+	const bool flushed = FlushInstructionCache(GetCurrentProcess(),
+		reinterpret_cast<void*>(baseAddress), moduleInfo.SizeOfImage) != FALSE;
+	const bool restored = protectionGuard.Restore();
+	if (!restored) logger.Log("Failed to restore memory protection after patching.\n");
+	if (!flushed) logger.Log("Failed to flush instruction cache after patching.\n");
+	return flushed && restored;
 }
 
 extern "C"  __declspec(dllexport) bool AnnoPluginAbi Init() {
 	logger = std::move(A5Ext::Logger::Create("Anno5WarehouseStorageCapExtender"));
-	PatchBytes();
-	return true;
+	return PatchBytes();
 
 }
 extern "C" __declspec(dllexport) void AnnoPluginAbi Shutdown() {

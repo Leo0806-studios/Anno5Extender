@@ -46,6 +46,8 @@ namespace A5Ext::AddressLibrary {
             return Module::GetInstance().GetBaseAddress() + rva;
         }
     };
-        BindingStatic<A5Ext::AddressLibrary::Anno2070::AI::Behaviour::CBehaviourAutoBuild> binding;
+    void InitializeCBehaviourAutoBuildBindings() {
+        static BindingStatic<Anno2070::AI::Behaviour::CBehaviourAutoBuild> binding;
+    }
 
 } // namespace A5Ext::AddressLibrary

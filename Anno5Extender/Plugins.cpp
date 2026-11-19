@@ -1,6 +1,8 @@
 #include <format>
 #include "Plugins.h"
 #include <filesystem>
+#include <memory>
+#include <stdexcept>
 #include "Module.h"
 
 #include "Log.h"
@@ -28,12 +30,19 @@ namespace A5Ext {
 			if (plugin)
 			{
 				Logger::GlobalLog("Initializing plugin: " + name);
-				if (!plugin->Init())
-				{
-					const char* errorMessage = "Plugin initialization failed.";
-					auto mainMessage = std::format("Failed to initialize plugin '{}': {}", name, errorMessage);
-					MessageBoxA(nullptr, mainMessage.c_str(), "Plugin Initialization Error", MB_ICONERROR | MB_OK);
-					std::terminate();
+				try {
+					if (!plugin->Init()) {
+						Logger::GlobalLog("Plugin initialization failed: " + name);
+						continue;
+					}
+				}
+				catch (const std::exception& error) {
+					Logger::GlobalLog("Plugin initialization threw: " + name + ": " + error.what());
+					continue;
+				}
+				catch (...) {
+					Logger::GlobalLog("Plugin initialization threw: " + name);
+					continue;
 				}
 				Logger::GlobalLog("Successfully initialized plugin: " + name);
 			}
@@ -88,8 +97,23 @@ namespace A5Ext {
 					if (subEntry.is_regular_file() && subEntry.path().extension() == ".dll") {
 						Logger::GlobalLog("Found plugin DLL: " + subEntry.path().string());
 						std::string pluginName = subEntry.path().stem().string();
-						HMODULE moduleHandle = LoadLibraryW(subEntry.path().c_str());
-						Plugin* plugin = new Plugin(moduleHandle, pluginName);
+						HMODULE moduleHandle = LoadLibraryExW(subEntry.path().c_str(), nullptr,
+							LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
+						if (!moduleHandle) {
+							const DWORD error = GetLastError();
+							Logger::GlobalLog(std::format("Failed to load '{}': Windows error {}",
+								subEntry.path().string(), error));
+							continue;
+						}
+						Plugin* plugin;
+						try {
+							plugin = new Plugin(moduleHandle, pluginName);
+						}
+						catch (const std::exception& error) {
+							FreeLibrary(moduleHandle);
+							Logger::GlobalLog("Failed to register plugin: " + pluginName + ": " + error.what());
+							continue;
+						}
 						AddPlugin(pluginName, plugin);
 						Logger::GlobalLog("Loaded plugin: " + pluginName);
 					}
@@ -98,6 +122,7 @@ namespace A5Ext {
 		}
 	}
 	Plugin::Plugin(HMODULE moduleHandle, const std::string& pluginName)
+		: moduleHandle(moduleHandle)
 	{
 #pragma warning(push)
 #pragma warning(disable: 4191) // Disable the warning for reinterpret_cast from function pointer
@@ -112,7 +137,7 @@ namespace A5Ext {
 		shutdown = reinterpret_cast<void(AnnoPluginAbi*)()>(GetProcAddress(moduleHandle, "Shutdown"));
 		if (!init || !shutdown)
 		{
-			Logger::GlobalLog("Failed to find Init or Shutdown function for plugin: " + pluginName);
+			throw std::runtime_error("Missing Init or Shutdown export");
 		}
 #pragma warning(pop)
 	}

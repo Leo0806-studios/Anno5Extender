@@ -1,10 +1,10 @@
 // Generated. The hash identifies the reviewed original, not this proxy.
 #pragma once
 namespace A5ext::Proxy::Generated {
-inline constexpr wchar_t BackendFileName[]=L"upc_r2_loader64_anno_original.dll";
-inline constexpr char BackendSha256[]="658a140d0eb8023a24b173544b2a88e8441020e94f4362bbd74fa416a301bb72";
-inline constexpr unsigned ExportCount=101;
-inline constexpr unsigned InitOrdinal=31;
+	inline constexpr wchar_t BackendFileName[] = L"upc_r2_loader64_anno_original.dll";
+	inline constexpr char BackendSha256[] = "658a140d0eb8023a24b173544b2a88e8441020e94f4362bbd74fa416a301bb72";
+	inline constexpr unsigned ExportCount = 101;
+	inline constexpr unsigned InitOrdinal = 31;
 }
 #pragma comment(linker, "/export:UPC_AchievementImageFree=upc_r2_loader64_anno_original.UPC_AchievementImageFree,@1")
 #pragma comment(linker, "/export:UPC_AchievementImageGet=upc_r2_loader64_anno_original.UPC_AchievementImageGet,@2")

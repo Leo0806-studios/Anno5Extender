@@ -1,0 +1,3 @@
+LIBRARY upc_r2_loader64
+EXPORTS
+    UPC_Init=Proxy_UPC_Init @31

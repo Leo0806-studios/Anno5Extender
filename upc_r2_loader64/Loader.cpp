@@ -7,7 +7,7 @@
 #include <string>
 #include <strsafe.h>
 
-#include "proxy_exports.generated.h"
+#include "ProxyHeader.h"
 
 #pragma comment(lib, "bcrypt.lib")
 
@@ -193,7 +193,7 @@ void StartExtender() noexcept
 
 	DWORD result = ERROR_UNHANDLED_EXCEPTION;
 	try {
-		result = init()== ERROR_SUCCESS ? ERROR_SUCCESS : ERROR_DLL_INIT_FAILED;
+		result = init();
 	}
 	catch (...) {
 		Log("extender_init_threw", result);

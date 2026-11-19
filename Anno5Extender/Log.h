@@ -3,6 +3,7 @@
 #include <string>
 #include <filesystem>
 #include <fstream>
+#include <utility>
 #pragma warning(push)
 #pragma warning(disable:4820)
 namespace A5Ext {
@@ -26,7 +27,8 @@ namespace A5Ext {
 			pluginName(std::move(other.pluginName)),
 			logFilePath(std::move(other.logFilePath)),
 			logFile(std::move(other.logFile)),
-			isBuffered(other.isBuffered)
+			isBuffered(other.isBuffered),
+			isInitialized(std::exchange(other.isInitialized, false))
 		{}
 
 		Logger& operator=(Logger&& other) {
@@ -35,6 +37,7 @@ namespace A5Ext {
 				logFilePath = std::move(other.logFilePath);
 				logFile = std::move(other.logFile);
 				isBuffered = other.isBuffered;
+				isInitialized = std::exchange(other.isInitialized, false);
 			}
 			return *this;
 		}
