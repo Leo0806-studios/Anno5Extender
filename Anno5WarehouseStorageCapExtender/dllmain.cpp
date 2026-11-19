@@ -26,7 +26,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 uint32_t getNewCapFromConfigValue() {
 	//get the new cap value from the config file
 
-	std::ifstream configFile(A5Ext::Module::GetInstance().GetFilePath().parent_path()/ "Anno5WarehouseStorageCapExtender/config.txt");
+	std::ifstream configFile(A5Ext::Module::GetInstance().GetFilePath().parent_path()/ "Anno5Extender/config/Anno5WarehouseStorageCapExtender/config.txt");
 	if (!configFile.is_open()) {
 		logger.Log("Failed to open config file.setting default value of 999999 \n");
 		return 999999;
