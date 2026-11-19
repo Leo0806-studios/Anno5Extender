@@ -8,6 +8,9 @@ void A5Ext::Init()
 	std::filesystem::path configPath = A5Ext::Module::GetInstance().GetFilePath().parent_path() / "Anno5Extender/config/config.txt";
 	std::filesystem::path pluginDir = A5Ext::Module::GetInstance().GetFilePath().parent_path() / "Anno5Extender/Plugins";
 	std::filesystem::path logDir = A5Ext::Module::GetInstance().GetFilePath().parent_path() / "Anno5Extender/Logs";
+	if (!std::filesystem::exists(configPath.parent_path())) {
+		std::filesystem::create_directories(configPath.parent_path());
+	}
 	if (!std::filesystem::exists(configPath)) {
 		std::ofstream configFile(configPath);
 		if (!configFile.is_open()) {
@@ -32,13 +35,13 @@ void A5Ext::Shutdown()
 	PluginRegistry::GetInstance().ShutdownAllPlugins();
 	PluginRegistry::GetInstance().ClearPlugins();
 }
-static bool g_isInitialized = false;
+bool g_isInitialized = false;
 extern "C" A5EXT_BOOTSTRAP_API DWORD __cdecl Anno5Extender_Init() noexcept
 {
-	try {
 		if (g_isInitialized) {
 			return ERROR_SUCCESS;
 		}
+	try {
 		A5Ext::Init();
 		g_isInitialized = true;	
 		return ERROR_SUCCESS;
@@ -58,3 +61,4 @@ A5EXT_BOOTSTRAP_API DWORD __cdecl Anno5Extender_Shutdown() noexcept
 		return ERROR_UNHANDLED_EXCEPTION;
 	}
 }
+

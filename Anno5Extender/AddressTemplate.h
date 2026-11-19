@@ -51,5 +51,16 @@ namespace  A5Ext::AddressLibrary {
 
 	}
 
+	//template specalize this with the type whos functions you want to bind, then write a derfault constructor for it and create a global instance.
+	template<typename Key>
+	class BindingStatic {
+		size_t GetAddress(size_t rva) {
+			return Module::GetInstance().GetBaseAddress() + rva;
+		}
 
+	};
+	inline  void Unbound() {
+		std::abort();
+	}
+	using DllEntry = void(*)(void);
 }
