@@ -153,6 +153,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CBehaviourAutoBuild.cpp" />
+    <ClCompile Include="CGameApp.cpp" />
     <ClCompile Include="CMainControll.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="INIT.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="AddressTemplate.h" />
     <ClInclude Include="CAccess.h" />
     <ClInclude Include="CBehaviourAutoBuild.h" />
+    <ClInclude Include="CGameApp.h" />
     <ClInclude Include="CMainControll.h" />
     <ClInclude Include="CThirdPartyBehaviour.h" />
     <ClInclude Include="INIT.h" />

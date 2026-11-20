@@ -78,6 +78,9 @@
     <ClCompile Include="CMainControll.cpp">
       <Filter>Source Files\AddressLibrary</Filter>
     </ClCompile>
+    <ClCompile Include="CGameApp.cpp">
+      <Filter>Source Files\AddressLibrary</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AddressTemplate.h">
@@ -109,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="Log.h">
       <Filter>Header Files\Extender</Filter>
+    </ClInclude>
+    <ClInclude Include="CGameApp.h">
+      <Filter>Header Files\AddressLibrary\Anno2070\Runtime\Application</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

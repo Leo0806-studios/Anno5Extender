@@ -14,26 +14,50 @@ BOOL WINAPI DllMain(HINSTANCE module, DWORD reason, LPVOID)
 }
 
 // Exported ONLY as UPC_Init @31 by the generated .def file.
-extern "C" int __cdecl Proxy_UPC_Init(std::uint32_t version, std::uint32_t product) noexcept
+extern "C" int __cdecl Proxy_UPC_Init(
+    std::uint32_t version,
+    std::uint32_t product) noexcept
 {
-	auto& state = Anno5Proxy::GetLoaderState();
-	const DWORD incomingError = GetLastError();
-	if (Anno5Proxy::loadingBackend) {
-		Anno5Proxy::FatalBackend(ERROR_POSSIBLE_DEADLOCK);
-	}
-	if (!InitOnceExecuteOnce(&state.backendOnce, Anno5Proxy::PrepareBackend, nullptr, nullptr)) {
-		Anno5Proxy::FatalBackend(GetLastError());
-	}
-	if (state.backendStatus != ERROR_SUCCESS || !state.backendInit) {
-		Anno5Proxy::FatalBackend(state.backendStatus);
-	}
+    auto& state = Anno5Proxy::GetLoaderState();
+    const DWORD incomingError = GetLastError();
 
-	Anno5Proxy::StartExtender();
-	SetLastError(incomingError);
-	const int result = state.backendInit(version, product);
-	const DWORD outgoingError = GetLastError();
-	Anno5Proxy::Log("upc_init_return", static_cast<DWORD>(result));
-	SetLastError(outgoingError);
-	return result;
+    if (Anno5Proxy::loadingBackend) {
+        Anno5Proxy::FatalBackend(ERROR_POSSIBLE_DEADLOCK);
+    }
+
+    if (!InitOnceExecuteOnce(
+        &state.backendOnce,
+        Anno5Proxy::PrepareBackend,
+        nullptr,
+        nullptr)) {
+        Anno5Proxy::FatalBackend(GetLastError());
+    }
+
+    if (state.backendStatus != ERROR_SUCCESS ||
+        !state.backendInit) {
+        Anno5Proxy::FatalBackend(state.backendStatus);
+    }
+
+  
+    SetLastError(incomingError);
+
+    const int result = state.backendInit(version, product);
+    const DWORD outgoingError = GetLastError();
+
+    if (result == 0) {
+        Anno5Proxy::StartExtender();
+    }
+    else {
+        Anno5Proxy::Log(
+            "extender_init_skipped_backend_failed",
+            static_cast<DWORD>(result));
+    }
+
+    SetLastError(outgoingError);
+
+    Anno5Proxy::Log(
+        "upc_init_return",
+        static_cast<DWORD>(result));
+
+    return result;
 }
-

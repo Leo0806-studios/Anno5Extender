@@ -11,6 +11,9 @@ namespace A5Ext {
 		this->pluginName = pluginName;
 		logFilePath = std::filesystem::path(LogDirectory) / (pluginName + ".log");
 		logFilePath = Module::GetInstance().GetFilePath().parent_path() / logFilePath;
+		if (std::filesystem::exists(logFilePath)) {
+			std::filesystem::remove(logFilePath);
+		}
 		logFile.open(logFilePath, std::ios::out | std::ios::app);
 		if (logFile.fail())
 		{
@@ -33,7 +36,8 @@ namespace A5Ext {
 		{
 			return;
 		}
-		logFile << "[" << pluginName << "] " << message << std::endl;
+		std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+		logFile << "[" << pluginName << "] " << now << " - " << message << std::endl;
 		if (!isBuffered) {
 
 			flush();
@@ -42,10 +46,17 @@ namespace A5Ext {
 	AnnoDll void Logger::GlobalLog(const std::string& message)
 	{
 		static std::filesystem::path logFilePath =Module::GetInstance().GetFilePath().parent_path() / std::filesystem::path(LogDirectory) / ("Global.log");
+		static bool Init = [&]() {
+			if (std::filesystem::exists(logFilePath)) {
+				std::filesystem::remove(logFilePath);
+			}
+			return true;
+			}();
 		static std::ofstream logFile(logFilePath, std::ios::out | std::ios::app);
 		static std::mutex mutex;
 		std::scoped_lock<std::mutex> lock(mutex);
-		logFile << "[Global] " << message << std::endl;
+		std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+		logFile << "[Global] " << now << " - " << message << std::endl;
 		logFile.flush();
 
 

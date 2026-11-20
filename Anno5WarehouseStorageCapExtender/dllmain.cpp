@@ -58,6 +58,7 @@ uint32_t& address(uintptr_t base, uint32_t offset) {
 	return *(std::bit_cast<uint32_t*>(base + offset));
 }
 static bool PatchBytes() {
+	logger.Log("Patching bytes to extend warehouse storage cap\n");
 	uint32_t newCap = 0;
 	try {
 		newCap = getNewCapFromConfigValue();
@@ -177,11 +178,14 @@ static bool PatchBytes() {
 	const bool restored = protectionGuard.Restore();
 	if (!restored) logger.Log("Failed to restore memory protection after patching.\n");
 	if (!flushed) logger.Log("Failed to flush instruction cache after patching.\n");
+	logger.Log("Patching bytes to extend warehouse storage cap complete\n");
+	
 	return flushed && restored;
 }
 
 extern "C"  __declspec(dllexport) bool AnnoPluginAbi Init() {
 	logger = std::move(A5Ext::Logger::Create("Anno5WarehouseStorageCapExtender"));
+	logger.Log("Anno5WarehouseStorageCapExtender initializing\n");
 	return PatchBytes();
 
 }

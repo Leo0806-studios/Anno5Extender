@@ -1,6 +1,7 @@
 #include <intrin.h>
 #include "CBehaviourAutoBuild.h"
 #include <cstdint>
+#include "Log.h"    
 
 // Generated bindings: validate executable/signatures before initializing.
 // Compile once; do not provide competing import-library symbols.
@@ -14,40 +15,42 @@
 #pragma comment(linker, "/alternatename:__imp_?unknown_0x38@CBehaviourAutoBuild@Behaviour@AI@Anno2070@AddressLibrary@A5Ext@@UEAAXXZ=CBehaviourAutoBuild_unknown_0x38")
 
 extern "C" {
-    A5Ext::AddressLibrary::DllEntry CBehaviourAutoBuild_init = &A5Ext::AddressLibrary::Unbound;
-    A5Ext::AddressLibrary::DllEntry CBehaviourAutoBuild_scalarDeletingDestructor = &A5Ext::AddressLibrary::Unbound;
-    A5Ext::AddressLibrary::DllEntry CBehaviourAutoBuild_serialize = &A5Ext::AddressLibrary::Unbound;
-    A5Ext::AddressLibrary::DllEntry CBehaviourAutoBuild_step = &A5Ext::AddressLibrary::Unbound;
-    A5Ext::AddressLibrary::DllEntry CBehaviourAutoBuild_unknown_0x10 = &A5Ext::AddressLibrary::Unbound;
-    A5Ext::AddressLibrary::DllEntry CBehaviourAutoBuild_unknown_0x18 = &A5Ext::AddressLibrary::Unbound;
-    A5Ext::AddressLibrary::DllEntry CBehaviourAutoBuild_unknown_0x30 = &A5Ext::AddressLibrary::Unbound;
-    A5Ext::AddressLibrary::DllEntry CBehaviourAutoBuild_unknown_0x38 = &A5Ext::AddressLibrary::Unbound;
+	A5Ext::AddressLibrary::DllEntry CBehaviourAutoBuild_init = &A5Ext::AddressLibrary::Unbound;
+	A5Ext::AddressLibrary::DllEntry CBehaviourAutoBuild_scalarDeletingDestructor = &A5Ext::AddressLibrary::Unbound;
+	A5Ext::AddressLibrary::DllEntry CBehaviourAutoBuild_serialize = &A5Ext::AddressLibrary::Unbound;
+	A5Ext::AddressLibrary::DllEntry CBehaviourAutoBuild_step = &A5Ext::AddressLibrary::Unbound;
+	A5Ext::AddressLibrary::DllEntry CBehaviourAutoBuild_unknown_0x10 = &A5Ext::AddressLibrary::Unbound;
+	A5Ext::AddressLibrary::DllEntry CBehaviourAutoBuild_unknown_0x18 = &A5Ext::AddressLibrary::Unbound;
+	A5Ext::AddressLibrary::DllEntry CBehaviourAutoBuild_unknown_0x30 = &A5Ext::AddressLibrary::Unbound;
+	A5Ext::AddressLibrary::DllEntry CBehaviourAutoBuild_unknown_0x38 = &A5Ext::AddressLibrary::Unbound;
 }
 
 namespace A5Ext::AddressLibrary {
 
-    template <>
-    class BindingStatic<A5Ext::AddressLibrary::Anno2070::AI::Behaviour::CBehaviourAutoBuild> {
-    public:
-        BindingStatic() {
-            CBehaviourAutoBuild_init = reinterpret_cast<DllEntry>(this->GetAddress(0x6b76d0)); // TODO: verified RVA
-            CBehaviourAutoBuild_scalarDeletingDestructor = reinterpret_cast<DllEntry>(this->GetAddress(0x6b7670)); // TODO: verified RVA
-            CBehaviourAutoBuild_serialize = reinterpret_cast<DllEntry>(this->GetAddress(0x6b7990)); // TODO: verified RVA
-            CBehaviourAutoBuild_step = reinterpret_cast<DllEntry>(this->GetAddress(0x6b7890)); // TODO: verified RVA
-            CBehaviourAutoBuild_unknown_0x10 = reinterpret_cast<DllEntry>(this->GetAddress(0x8bff0)); // TODO: verified RVA
-            CBehaviourAutoBuild_unknown_0x18 = reinterpret_cast<DllEntry>(this->GetAddress(0x8bff0)); // TODO: verified RVA
-            CBehaviourAutoBuild_unknown_0x30 = reinterpret_cast<DllEntry>(this->GetAddress(0x8bff0)); // TODO: verified RVA
-            CBehaviourAutoBuild_unknown_0x38 = reinterpret_cast<DllEntry>(this->GetAddress(0x8bff0)); // TODO: verified RVA
-        }
+	template <>
+	class BindingStatic<A5Ext::AddressLibrary::Anno2070::AI::Behaviour::CBehaviourAutoBuild> {
+	public:
+		BindingStatic() {
+			Logger::GlobalLog("Binding CBehaviourAutoBuild functions to their addresses in the executable.");
+			CBehaviourAutoBuild_init = reinterpret_cast<DllEntry>(this->GetAddress(0x6b76d0)); // TODO: verified RVA
+			CBehaviourAutoBuild_scalarDeletingDestructor = reinterpret_cast<DllEntry>(this->GetAddress(0x6b7670)); // TODO: verified RVA
+			CBehaviourAutoBuild_serialize = reinterpret_cast<DllEntry>(this->GetAddress(0x6b7990)); // TODO: verified RVA
+			CBehaviourAutoBuild_step = reinterpret_cast<DllEntry>(this->GetAddress(0x6b7890)); // TODO: verified RVA
+			CBehaviourAutoBuild_unknown_0x10 = reinterpret_cast<DllEntry>(this->GetAddress(0x8bff0)); // TODO: verified RVA
+			CBehaviourAutoBuild_unknown_0x18 = reinterpret_cast<DllEntry>(this->GetAddress(0x8bff0)); // TODO: verified RVA
+			CBehaviourAutoBuild_unknown_0x30 = reinterpret_cast<DllEntry>(this->GetAddress(0x8bff0)); // TODO: verified RVA
+			CBehaviourAutoBuild_unknown_0x38 = reinterpret_cast<DllEntry>(this->GetAddress(0x8bff0)); // TODO: verified RVA
+			Logger::GlobalLog("Binding CBehaviourAutoBuild functions complete.");
+		}
 
-    private:
-        // A specialization does not inherit the primary template helper.
-        std::uintptr_t GetAddress(std::uintptr_t rva) const {
-            return Module::GetInstance().GetBaseAddress() + rva;
-        }
-    };
-    void InitializeCBehaviourAutoBuildBindings() {
-        static BindingStatic<Anno2070::AI::Behaviour::CBehaviourAutoBuild> binding;
-    }
+	private:
+		// A specialization does not inherit the primary template helper.
+		std::uintptr_t GetAddress(std::uintptr_t rva) const {
+			return Module::GetInstance().GetBaseAddress() + rva;
+		}
+	};
+	void InitializeCBehaviourAutoBuildBindings() {
+		static BindingStatic<Anno2070::AI::Behaviour::CBehaviourAutoBuild> binding;
+	}
 
 } // namespace A5Ext::AddressLibrary

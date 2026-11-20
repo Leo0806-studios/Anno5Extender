@@ -13,6 +13,7 @@ No native RVAs, executable identity checks or game object layouts are inferred.
 import argparse
 import hashlib
 import json
+import os
 import re
 from pathlib import Path
 import shutil
@@ -23,6 +24,7 @@ FUNCTIONS = {'FunctionDecl', 'CXXMethodDecl', 'CXXConstructorDecl',
              'CXXDestructorDecl', 'CXXConversionDecl'}
 CONTEXTS = {'NamespaceDecl', 'CXXRecordDecl', 'RecordDecl',
             'ClassTemplateSpecializationDecl', 'ClassTemplatePartialSpecializationDecl'}
+HEADERS = {'.h', '.hpp', '.hxx', '.hh', '.inc', '.inl'}
 
 
 def documents(text):
@@ -38,14 +40,40 @@ def documents(text):
         yield root
 
 
-def extract(roots, matches, all_functions):
-    contexts, candidates = {}, []
+def extract(roots, matches, all_functions, source=None):
+    contexts, candidates, class_files = {}, [], {}
+    last_file = source
+    file_contents = {}
 
-    def visit(node, context=(), imported_class=False, owner=None):
+    def declaration_file(node, inherited):
+        # Clang omits repeated file fields. Validate the class identifier at its
+        # byte offset before trusting an inherited/elided source location.
+        nonlocal last_file
+        loc = node.get('loc', {})
+        loc = loc.get('expansionLoc', loc.get('spellingLoc', loc))
+        if loc.get('file'):
+            last_file = Path(loc['file']).resolve()
+        for candidate in (last_file, inherited, source):
+            if candidate is None or 'offset' not in loc:
+                continue
+            candidate = Path(candidate)
+            if not candidate.is_file():
+                continue
+            name = node.get('name', '').encode('utf-8')
+            offset = loc['offset']
+            if candidate not in file_contents:
+                file_contents[candidate] = candidate.read_bytes()
+            if name and file_contents[candidate][offset:offset + len(name)] == name:
+                return candidate.resolve()
+        return None
+
+    def visit(node, context=(), imported_class=False, owner=None, file_hint=None):
         if node.get('isImplicit'):
             return
         kind, name = node.get('kind'), node.get('name', '')
         children = node.get('inner', [])
+        located = declaration_file(node, file_hint)
+        file_hint = located or file_hint
         own_import = any(c.get('kind') == 'DLLImportAttr' for c in children)
         if kind in CONTEXTS:
             context = context + ((name,) if name else ())
@@ -54,16 +82,20 @@ def extract(roots, matches, all_functions):
             imported_class = own_import if kind != 'NamespaceDecl' else False
             if kind != 'NamespaceDecl':
                 owner = '::'.join(context)
+                if located and (node.get('completeDefinition') or owner not in class_files):
+                    class_files[owner] = located
         if kind in FUNCTIONS and node.get('mangledName'):
             candidates.append((node, context, own_import or imported_class, owner))
         for child in children:
-            visit(child, context, imported_class, owner)
+            visit(child, context, imported_class, owner, file_hint)
 
     for root in roots:
         visit(root)
     result = {}
     for node, context, imported, owner in candidates:
         context = contexts.get(node.get('parentDeclContextId'), context)
+        if '::'.join(context) in class_files:
+            owner = '::'.join(context)
         qualified = '::'.join(context + (node['name'],))
         if not all_functions and not imported:
             continue
@@ -74,10 +106,39 @@ def extract(roots, matches, all_functions):
         slot = 'AnnoGeneratedImport_' + hashlib.sha256(symbol.encode()).hexdigest()[:20]
         result[symbol] = dict(qualified_name=qualified, kind=node['kind'],
                               owner_class=owner, method_name=node['name'],
+                              declaration_file=str(class_files[owner]) if owner in class_files else None,
                               signature=node.get('type', {}).get('qualType', ''),
                               dllimport=imported, mangled_name=symbol,
                               import_symbol='__imp_' + symbol, slot=slot)
     return sorted(result.values(), key=lambda r: (r['qualified_name'], r['mangled_name']))
+
+
+def initializer_declaration(header_bytes, names):
+    """Append missing namespace-scope declarations, preserving BOM and newlines."""
+    text = header_bytes.decode('utf-8-sig')
+    newline = '\r\n' if '\r\n' in text else '\n'
+    # Existing generated blocks and ordinary declarations in this namespace are
+    # recognized. Comments cannot masquerade as a declaration.
+    clean = re.sub(r'/\*.*?\*/|//[^\r\n]*', '', text, flags=re.S)
+    bodies = re.findall(r'namespace\s+A5Ext\s*::\s*AddressLibrary\s*\{([^{}]*)\}', clean)
+    missing = [name for name in sorted(set(names)) if not any(
+        re.search(r'\bvoid\s+' + re.escape(name) + r'\s*\(\s*\)\s*;', body) for body in bodies)]
+    if not missing:
+        return header_bytes, []
+    block = (newline + '// Binding initializers generated by generate_msvc_bindings.py.' + newline +
+             'namespace A5Ext::AddressLibrary {' + newline +
+             ''.join('    void ' + name + '();' + newline for name in missing) + '}' + newline)
+    # Keep a conventional outer include guard effective for the new declarations.
+    guard = re.match(r'\s*(?:/\*.*?\*/\s*|//[^\n]*\n\s*)*#\s*ifndef\s+(\w+)\s*\n\s*#\s*define\s+\1\b', text, re.S)
+    ending = re.search(r'^[ \t]*#\s*endif\b[^\r\n]*(?:\r?\n)?\s*\Z', text, re.M)
+    if guard and ending:
+        text = text[:ending.start()] + block + text[ending.start():]
+    else:
+        text = text.rstrip('\r\n') + newline + block
+    encoded = text.encode('utf-8')
+    if header_bytes.startswith(b'\xef\xbb\xbf'):
+        encoded = b'\xef\xbb\xbf' + encoded
+    return encoded, missing
 
 
 def class_bindings(rows, header, rvas, template=False):
@@ -99,6 +160,7 @@ def class_bindings(rows, header, rvas, template=False):
         stem = short if short_counts[short] == 1 else short + '_' + hashlib.sha256(owner.encode()).hexdigest()[:8]
         names = {}
         for row in methods:
+            row['binding_initializer'] = 'Initialize_' + stem + 'Bindings'
             method = row['method_name']
             method = re.sub(r'\W', '_', method[:1].lower() + method[1:])
             row['slot'] = stem + '_' + method
@@ -106,7 +168,8 @@ def class_bindings(rows, header, rvas, template=False):
         for row in methods:
             if names[row['slot']] > 1:
                 row['slot'] += '_' + hashlib.sha256(row['mangled_name'].encode()).hexdigest()[:8]
-        lines = ['#include <intrin.h>', '#include ' + json.dumps(header), '#include <cstdint>', '',
+        include = header[owner] if isinstance(header, dict) else header
+        lines = ['#include <intrin.h>', '#include ' + json.dumps(include), '#include <cstdint>', '#include "Log.h"','',
                  '// Generated bindings: validate executable/signatures before initializing.',
                  '// Compile once; do not provide competing import-library symbols.']
         for row in methods:
@@ -121,6 +184,7 @@ def class_bindings(rows, header, rvas, template=False):
             lines += ['    // Deliberate compile blocker: never run a zero-RVA binding.',
                       '    static_assert(false, "Unfinished binding template: fill every zero RVA and remove this assertion, or regenerate with --rva-map.");']
         lines.append('    BindingStatic() {')
+        lines.append('Logger::GlobalLog("Binding ' + owner + 'functions to their addresses in the executable.");')
         for row in methods:
             symbol = row['mangled_name']
             if template:
@@ -130,13 +194,14 @@ def class_bindings(rows, header, rvas, template=False):
             else:
                 lines += ['        // TODO: verified RVA for ' + row['qualified_name'] + ' ' + row['signature'],
                           '        // ' + row['slot'] + ' = reinterpret_cast<DllEntry>(this->GetAddress(/* RVA */));']
+        lines.append('Logger::GlobalLog("Binding '+ owner + 'functions complete.");')
         lines += ['    }', '', 'private:',
                   '    // A specialization does not inherit the primary template helper.',
                   '    std::uintptr_t GetAddress(std::uintptr_t rva) const {',
                   '        return Module::GetInstance().GetBaseAddress() + rva;',
                   '    }', '};', '',
                   '// No global instance: call explicitly AFTER executable validation.',
-                  '// Declare this function in the resolver TU before calling it.',
+                  '// Declared in the corresponding class header.',
                   'void Initialize_' + stem + 'Bindings() {',
                   '    static BindingStatic<' + owner + '> binding;', '    (void)binding;',
                   '}', '', '} // namespace A5Ext::AddressLibrary', '']
@@ -192,7 +257,7 @@ def main(argv=None):
     parser.add_argument('--bindings', type=Path, help='Write generated slot definitions/aliases .cpp')
     parser.add_argument('--format', choices=['class', 'raw'], default='class')
     parser.add_argument('--output-dir', type=Path, help='Write one ClassName.cpp per class')
-    parser.add_argument('--header', help='Header include in class output; defaults to input header basename')
+    parser.add_argument('--header', help='Override generated #include; declarations still go in each class declaring header')
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument('--rva-map', type=Path, help='JSON object mapping exact decorated names to positive RVAs (integer or hex string)')
     mode.add_argument('--template', action='store_true', help='Zero-RVA class template with compile blocker (default without --rva-map)')
@@ -226,11 +291,11 @@ def main(argv=None):
         print(completed.stderr, end='', file=sys.stderr)
     if completed.returncode:
         return completed.returncode  # Never publish a misleading partial AST inventory.
-    rows = extract(list(documents(completed.stdout)), args.match, args.all_functions)
+    rows = extract(list(documents(completed.stdout)), args.match, args.all_functions, source)
     if not rows:
         print('No matching decorated declarations; no output files were written.', file=sys.stderr)
         return 2
-    output_files = {}
+    output_files, header_updates = {}, {}
     if args.bindings or args.output_dir:
         if args.format == 'class':
             rvas = {}
@@ -250,11 +315,17 @@ def main(argv=None):
                     if symbol not in {row['mangled_name'] for row in rows}:
                         parser.error('RVA map symbol not selected: ' + symbol)
                     rvas[symbol] = rva
-            header = args.header or source.with_suffix('.h').name
-            if source.suffix.lower() in ('.h', '.hpp', '.hxx') and not args.header:
-                header = source.name
+            headers = {}
+            output_base = args.bindings.parent if args.bindings else args.output_dir
+            for row in rows:
+                path = Path(row['declaration_file']) if row.get('declaration_file') else None
+                if path is None or path.suffix.lower() not in HEADERS or not path.is_file():
+                    parser.error('Cannot locate a declaring header for ' + str(row['owner_class']) + '; use a source including its class definition')
+                headers[row['owner_class']] = path
+            includes = {owner: args.header or Path(os.path.relpath(path, output_base.resolve())).as_posix()
+                        for owner, path in headers.items()}
             try:
-                generated = class_bindings(rows, header, rvas, template=args.rva_map is None)
+                generated = class_bindings(rows, includes, rvas, template=args.rva_map is None)
             except ValueError as error:
                 parser.error(str(error))
             if args.bindings:
@@ -263,6 +334,9 @@ def main(argv=None):
                 output_files[args.bindings] = next(iter(generated.values()))
             else:
                 output_files = {args.output_dir / name: text for name, text in generated.items()}
+            for row in rows:
+                path = headers[row['owner_class']]
+                header_updates.setdefault(path, []).append(row['binding_initializer'])
         else:
             output_files[args.bindings] = bindings_source(rows)
     if any(path.resolve() == source or (args.json and path.resolve() == args.json.resolve()) or
@@ -274,9 +348,23 @@ def main(argv=None):
         parser.error('An output would overwrite an input')
     if not args.force and any(path.exists() for path in all_outputs):
         parser.error('Output already exists; choose a new destination or use --force')
+    if any(path.resolve() in header_updates for path in all_outputs):
+        parser.error('An output would overwrite a class header')
+    header_changes = {}
+    for path, names in header_updates.items():
+        before = path.read_bytes()
+        try:
+            after, inserted = initializer_declaration(before, names)
+        except UnicodeDecodeError:
+            parser.error('Class header must use UTF-8 (optional BOM): ' + str(path))
+        header_changes[path] = (before, after, inserted)
     report = dict(schema_version=1, source=str(source), source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
                   generation_mode=('template' if args.rva_map is None else 'rva-map') if args.format == 'class' else 'raw',
                   target='x86_64-pc-windows-msvc', command=command, symbols=rows,
+                  header_updates=[dict(path=str(path), initializers=names,
+                                       before_sha256=hashlib.sha256(before).hexdigest(),
+                                       after_sha256=hashlib.sha256(after).hexdigest())
+                                  for path, (before, after, names) in header_changes.items()],
                   limitations=['Clang Microsoft ABI names; verify against your MSVC toolset.',
                                'Only declarations with AST mangledName; dependent templates and implicit symbols are not enumerated.',
                                'Constructor/destructor thunk variants may need additional compiler-emitted references.',
@@ -290,6 +378,11 @@ def main(argv=None):
         args.output_dir.mkdir(parents=True, exist_ok=True)
     for path, content in output_files.items():
         path.write_text(content, encoding='utf-8')
+    for path, (before, after, inserted) in header_changes.items():
+        if path.read_bytes() != before:
+            raise RuntimeError('Class header changed during generation: ' + str(path))
+        if inserted:
+            path.write_bytes(after)
     print('Extracted {} symbols.'.format(len(rows)), file=sys.stderr)
     return 0
 
